@@ -33,7 +33,10 @@
             <b id="activeName">{{ companyName || "Company List" }}</b>
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
-          <el-dropdown-menu slot="dropdown">
+          <el-dropdown-menu
+            slot="dropdown"
+            style="height: 400px; overflow: scroll"
+          >
             <el-dropdown-item
               v-for="(company, index) in companies"
               :key="index"

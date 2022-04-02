@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
+ */
 
 //Route::middleware('auth:api')->get('/user', function (Request $request) {
 //Route::get('/user', function (Request $request) {
@@ -20,83 +20,82 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('company')->group(function () {
 
-  Route::get('/', 'CompanyController@index');
-  Route::post('/', 'CompanyController@store');
-  Route::delete('/{company}', 'CompanyController@destroy');
+    Route::get('/', 'CompanyController@index');
+    Route::post('/', 'CompanyController@store');
+    Route::delete('/{company}', 'CompanyController@destroy');
 
-  // Consolidated Company Info
-  Route::get('/consolidated', 'RDCreditsController@index');
-  Route::get('/consolidated-rd', 'CompanyController@consolidatedRD');
+    // Consolidated Company Info
+    Route::get('/consolidated', 'RDCreditsController@index');
+    Route::get('/consolidated-rd', 'CompanyController@consolidatedRD');
 
-  // Claim Calculation
-//  Route::post('/claim-calculation/{date}/{endDate}', 'CompanyController@claimCalculation');
-  Route::post('/claim-calculation', 'CompanyController@claimCalculation');
+    // Claim Calculation
+    //  Route::post('/claim-calculation/{date}/{endDate}', 'CompanyController@claimCalculation');
+    Route::post('/claim-calculation', 'CompanyController@claimCalculation');
 
-  // Alerts
-  Route::get('/events', 'AlertController@index');
-  Route::post('/events', 'AlertController@store');
-  Route::delete('/events/{alert}', 'AlertController@destroy');
+    // Alerts
+    Route::get('/events', 'AlertController@index');
+    Route::post('/events', 'AlertController@store');
+    Route::delete('/events/{alert}', 'AlertController@destroy');
 
-  Route::put('/update/{company}', 'CompanyController@update');
-  Route::post('/new-credit', 'CompanyController@newCredit');
+    Route::put('/update/{company}', 'CompanyController@update');
+    Route::post('/new-credit', 'CompanyController@newCredit');
 
-  //Delete credit
-  Route::delete('/delete-credit/{credit}', 'RDCreditsController@destroy');
+    //Delete credit
+    Route::delete('/delete-credit/{credit}', 'RDCreditsController@destroy');
 
-  // Update Credit Recieved
-  Route::put('/update-rdc/{credit}', 'RDCreditsController@update');
+    // Update Credit Recieved
+    Route::put('/update-rdc/{credit}', 'RDCreditsController@update');
 
-  Route::post('/form-upload/{form}', 'FormController@store');
-  Route::post('/form-upload-additional/{form}', 'FormController@storeAdditional');
-  Route::put('/form-update-additional/{form}', 'FormController@updateAdditional');
-  Route::post('/b64-upload', 'FormController@decodeBase64ImageAndStore');
+    Route::post('/form-upload/{form}', 'FormController@store');
+    Route::post('/form-upload-additional/{form}', 'FormController@storeAdditional');
+    Route::put('/form-update-additional/{form}', 'FormController@updateAdditional');
+    Route::post('/b64-upload', 'FormController@decodeBase64ImageAndStore');
 
-  // Attorney and Work Forms
-  Route::post('/attorney-work/{company}', 'AttorneyandWorkController@store');
-  Route::delete('/attorney-work/{attorneyandWork}', 'AttorneyandWorkController@destroy');
+    // Attorney and Work Forms
+    Route::post('/attorney-work/{company}', 'AttorneyandWorkController@store');
+    Route::delete('/attorney-work/{attorneyandWork}', 'AttorneyandWorkController@destroy');
 
-  // Checklist PUT / Update Checklist item
-  Route::put('/checklist/{checklist}', 'ChecklistController@update');
-  // Checklist POST Checklist item
-  Route::post('/checklist', 'ChecklistController@store');
-  // Checklist DELETE Checklist item
-  Route::delete('/checklist/{checklist}', 'ChecklistController@destroy');
+    // Checklist PUT / Update Checklist item
+    Route::put('/checklist/{checklist}', 'ChecklistController@update');
+    // Checklist POST Checklist item
+    Route::post('/checklist', 'ChecklistController@store');
+    // Checklist DELETE Checklist item
+    Route::delete('/checklist/{checklist}', 'ChecklistController@destroy');
 
-  // Delete
-  Route::post('/form/{form}', 'FormController@destroyFile');
+    // Delete
+    Route::post('/form/{form}', 'FormController@destroyFile');
 
-  // Store Key Due Date
-  Route::post('/kdd', 'KeyDueDatesController@store');
-  Route::delete('/kdd/{keyDueDate}', 'KeyDueDatesController@destroy');
+    // Store Key Due Date
+    Route::post('/kdd', 'KeyDueDatesController@store');
+    Route::delete('/kdd/{keyDueDate}', 'KeyDueDatesController@destroy');
 
-  // Association
-  Route::get('/association', 'HomeController@usersWithAssociation');
-  Route::post('/association', 'AssociationController@store');
+    // Association
+    Route::get('/association', 'HomeController@usersWithAssociation');
+    Route::post('/association', 'AssociationController@store');
 
-  //Update user password
-  Route::post('/user/{user}', 'UserController@update');
+    //Update user password
+    Route::post('/user/{user}', 'UserController@update');
 
-  // Analyzer API endpoints
-  Route::post('/analyzer/qq/{year}', 'QualifyingQuestionsYearsController@store');
-  Route::get('/analyzer/qq/{companyId}', 'QualifyingQuestionsYearsController@index');
-  Route::delete('/analyzer/qq/{companyId}', 'QualifyingQuestionsYearsController@destroy');
+    // Analyzer API endpoints
+    Route::post('/analyzer/qq/{year}', 'QualifyingQuestionsYearsController@store');
+    Route::get('/analyzer/qq/{companyId}', 'QualifyingQuestionsYearsController@index');
+    Route::delete('/analyzer/qq/{companyId}', 'QualifyingQuestionsYearsController@destroy');
 
-  // Financial Data
-  Route::post('/analyzer/fd/', 'FinancialDataController@store');
-  Route::put('/analyzer/fd/{fd}', 'FinancialDataController@update');
-  Route::delete('/analyzer/fd/{fd}', 'FinancialDataController@destroy');
+    // Financial Data
+    Route::post('/analyzer/fd/', 'FinancialDataController@store');
+    Route::put('/analyzer/fd/{fd}', 'FinancialDataController@update');
+    Route::delete('/analyzer/fd/{fd}', 'FinancialDataController@destroy');
 
-  // Qualifying Percentage
-  Route::post('/analyzer/qp/', 'QualifyingPercentageController@store');
-  Route::put('/analyzer/qp/{qualifyingPercentage}', 'QualifyingPercentageController@update');
-  Route::get('/analyzer/qp/{id}', 'QualifyingPercentageController@index');
+    // Qualifying Percentage
+    Route::post('/analyzer/qp/', 'QualifyingPercentageController@store');
+    Route::put('/analyzer/qp/{qualifyingPercentage}', 'QualifyingPercentageController@update');
+    Route::get('/analyzer/qp/{id}', 'QualifyingPercentageController@index');
 
-  // Project Documentation
-  Route::post('/analyzer/pd', 'QualifyingPercentageController@storeFile');
+    // Project Documentation
+    Route::post('/analyzer/pd', 'QualifyingPercentageController@storeFile');
 
-  //Update Company Sorted Field
-   Route::put('/sorted/{company}', 'CompanyController@sorted');
-
+    //Update Company Sorted Field
+    Route::put('/sorted/{company}', 'CompanyController@sorted');
 
     /**
      * StoredForms API endpoints
@@ -106,8 +105,8 @@ Route::prefix('company')->group(function () {
      * /new
      *
      */
-     // Company now returns all stored forms as eager loaded
-     Route::get("forms", "CompanyController@indexFormsOnly");
+    // Company now returns all stored forms as eager loaded
+    Route::get("forms", "CompanyController@indexFormsOnly");
 
     // Store new resource in DB
     Route::post('/stored/new', 'StoredFormsController@store');
@@ -130,5 +129,10 @@ Route::prefix('company')->group(function () {
 });
 
 Route::prefix('partybemine')->group(function () {
-  Route::get('/signup', 'StandardSignupController@index');
+    Route::post('/signup', 'StandardSignupController@store');
+    Route::post('/quicklogin', 'StandardSignupController@quickLogin');
+    Route::post('/login', 'StandardSignupController@login');
+    Route::post('/create', 'EventController@create');
+    Route::get('/events', 'EventController@index');
+
 });

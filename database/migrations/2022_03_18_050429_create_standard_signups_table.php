@@ -14,8 +14,17 @@ class CreateStandardSignupsTable extends Migration
     public function up()
     {
         Schema::create('standard_signups', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->timestamps();
+            $table->string('email');
+            $table->string('zip');
+            $table->string('name');
+            $table->string('password');
+            $table->uuid('uuid');
+            $table->longText('qrcode_src');
+            $table->longText('profile_image_src')->nullable();
+            $table->string('token');
+            $table->string('role');
         });
     }
 
