@@ -57,6 +57,8 @@
       :ty_8821_url="t_8821_url"
       :type_941_2020="t_941_2020"
       :type_941_2020_url="t_941_2020_url"
+      :type_941_2022="t_941_2022"
+      :type_941_2022_url="t_941_2022_url"
     />
 
     <p-o-wand-s-o-w-component
@@ -90,6 +92,8 @@
       :type_941_2020_url="t_941_2020_url"
       :type_941_2021="t_941_2021"
       :type_941_2021_url="t_941_2021_url"
+      :type_941_2022="t_941_2022"
+      :type_941_2022_url="t_941_2022_url"
     />
 
     <!--Profile-->
@@ -190,6 +194,8 @@ export default {
     t_941_2020_url: String,
     t_941_2021: String,
     t_941_2021_url: String,
+    t_941_2022: String,
+    t_941_2022_url: String,
     auth_object: Object,
     environment_type: String,
   },

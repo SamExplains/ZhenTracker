@@ -23,6 +23,8 @@
                          :t_941_2020_url="'{{ asset('forms/Form_941_2020A.pdf') }}'"
                          :t_941_2021="'{{ asset('img/form_941_2021.png') }}'"
                          :t_941_2021_url="'{{ asset('forms/Form 941 (Rev. June 2021).pdf') }}'"
+                         :t_941_2022="'{{ asset('img/form_941_2021.png') }}'"
+                         :t_941_2022_url="'{{ asset('forms/Form_941_(Rev._March_2022).pdf') }}'"
                          :auth_object="{{ Auth()->user() }}"
                          environment_type="production"/>
 

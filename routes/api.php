@@ -133,6 +133,22 @@ Route::prefix('partybemine')->group(function () {
     Route::post('/quicklogin', 'StandardSignupController@quickLogin');
     Route::post('/login', 'StandardSignupController@login');
     Route::post('/create', 'EventController@create');
-    Route::get('/events', 'EventController@index');
-
+    Route::get('/events/{filter}', 'EventController@index');
+    // GET events created by the user
+    Route::get('/events/creator/{uid}', 'EventController@getCreatorEvents');
+    Route::get('/events/search/{query}', 'EventController@search');
+    // PATCH event registered field
+    Route::patch('/events/{eid}', 'EventController@updateRegistered');
+    // PATCH event checklist
+    Route::patch('/checklist', 'EventController@updateChtecklist');
+    // DELETE registered record
+    Route::delete('/registration', 'RegistrationController@destroy');
+    // INSERT registration record
+    Route::post('/registration', 'RegistrationController@store');
+    // GET registered events list
+    Route::get('/registration/{uid}', 'RegistrationController@index');
+    // GET check if user is registered for event
+    Route::get('/registration/user/{uid}/{eid}', 'RegistrationController@checkIfUserIsRegistered');
+    // PATCH registration record
+    Route::patch('/registration/{registration}', 'RegistrationController@update');
 });

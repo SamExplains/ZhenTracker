@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Event;
+use App\Registration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as Image;
-// import the Intervention Image Manager Class
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class EventController extends Controller
@@ -20,10 +20,19 @@ class EventController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(String $filter)
     {
-        //
-        return DB::table('events')->orderBy('id')->paginate(10);
+        // return only public events
+        // return DB::table('events')->where('public_private', '=', 0)->orderBy('id')->paginate(10);
+        if ($filter === "new") {
+            return DB::table('events')->orderBy('id', 'desc')->paginate(10);
+        } else if ($filter === "old") {
+            return DB::table('events')->orderBy('id', 'asc')->paginate(10);
+        } else if ($filter === "zip") {
+            // Arrange by Zip desc
+            return DB::table('events')->orderBy('zip', 'desc')->paginate(10);
+        }
+
     }
 
     /**
@@ -70,6 +79,13 @@ class EventController extends Controller
             'event_key' => $event_key,
         ]);
 
+        // Create and register creator record
+        Registration::create([
+            'creator_id' => $request->creator_id,
+            'event_id' => $event->id,
+            'registered' => 1,
+        ]);
+
         return response()->json($event, 200);
     }
 
@@ -90,6 +106,7 @@ class EventController extends Controller
         })->stream('jpeg', 90);
 
         Storage::disk('s3')->put($output, $img);
+        // Storage::disk('s3')->put($output, $decodedBase64);
         return $this->s3BaseClientUL . $output;
     }
 
@@ -138,6 +155,17 @@ class EventController extends Controller
         //
     }
 
+    public function updateRegistered(String $eid, Request $request)
+    {
+        if (Event::findOrFail($eid)) {
+            $event = Event::find($eid);
+            $event->registered = $request->registered;
+            $event->save();
+            return response()->json($event, 200);
+        }
+        return response()->json('no record updated', 201);
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -147,5 +175,29 @@ class EventController extends Controller
     public function destroy(Event $event)
     {
         //
+    }
+
+    public function search(string $query)
+    {
+        $results = Event::where('title', 'like', '%' . $query . '%')->get();
+
+        return response()->json($results, 200);
+    }
+
+    public function updateChtecklist(Request $request)
+    {
+        if (Event::findOrFail($request->id)) {
+            $event = Event::find($request->id);
+            $event->additional_items = $request->additional_items;
+            $event->save();
+            return response()->json($event, 200);
+        }
+        return response()->json("no event found", 200);
+    }
+
+    public function getCreatorEvents(String $uid)
+    {
+        $events = Event::where('creator_id', '=', $uid)->get();
+        return response()->json($events);
     }
 }

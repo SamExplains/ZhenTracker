@@ -114,6 +114,12 @@
           :formUrl="type_941_2021_url"
           :disableDownload="'N'"
         />
+
+        <form_941_2022_-component
+          v-show="this.active.formCode === '941_2022'"
+          :formUrl="type_941_2022_url"
+          :disableDownload="'N'"
+        />
       </el-tab-pane>
 
       <el-tab-pane label="Stored Forms History">
@@ -137,6 +143,7 @@ import Form_3523 from "./IRS Forms/Form_3523";
 import Form_8821 from "./IRS Forms/Form_8821";
 import Form_941_2020_Component from "./IRS Forms/Form_941_2020_Component";
 import Form_941_2021_Component from "./IRS Forms/Form_941_2021_Component.vue";
+import Form_941_2022_Component from "./IRS Forms/Form_941_2022_Component.vue";
 import Form_941X_2020 from "./IRS Forms/Form_941X_2020";
 import X2020 from "./IRS Forms/X2020";
 import X2021 from "./IRS Forms/X2021.vue";
@@ -148,6 +155,7 @@ export default {
     X2020,
     Form_941_2020_Component,
     Form_941_2021_Component,
+    Form_941_2022_Component,
     Form_8821,
     Form_3523,
     Form_6765,
@@ -180,6 +188,8 @@ export default {
     type_941_2020_url: String,
     type_941_2021: String,
     type_941_2021_url: String,
+    type_941_2022: String,
+    type_941_2022_url: String,
   },
   computed: {
     ...mapGetters(["returnCurrentActiveCompany"]),
@@ -194,6 +204,7 @@ export default {
           "941",
           "941_2020",
           "941_2021",
+          "941_2022",
           "941X",
           "941X2020",
           "941X2021",
@@ -209,6 +220,12 @@ export default {
           imageSource: this.type_8974,
           name: "Qualified Small Business Payroll Tax Credit for Increasing Research Activities",
           code: "8974",
+        },
+        {
+          title: "Form 941 (Rev. March 2022)",
+          imageSource: this.type_941_2022,
+          name: "Employer's Quarterly Federal Tax Return",
+          code: "941_2022",
         },
         {
           title: "Form 941 (Rev. June 2021)",
@@ -282,6 +299,7 @@ export default {
       activeForm_8821: false,
       activeForm_941_2020: false,
       activeForm_941_2021: false,
+      activeForm_941_2022: false,
       checkedForms: [],
       isFillingOut: false,
       showPersonal: true,
@@ -296,6 +314,7 @@ export default {
         t8821: false,
         t941_2020: false,
         t941_2021: false,
+        t941_2022: false,
       },
       errors: {
         form8974: false,

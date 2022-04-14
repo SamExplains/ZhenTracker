@@ -14,7 +14,7 @@ class CreateEventsTable extends Migration
     public function up()
     {
         Schema::create('events', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->timestamps();
             $table->string('title');
             $table->mediumText('description');
@@ -33,6 +33,7 @@ class CreateEventsTable extends Migration
             $table->string('additional_items');
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
+            $table->string('private_authentication_code')->nullable();
             $table->mediumText('qrcode');
             $table->longText('registered')->nullable();
             $table->longText('checked_in')->nullable();
