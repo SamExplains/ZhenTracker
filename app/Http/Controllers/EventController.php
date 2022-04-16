@@ -200,4 +200,35 @@ class EventController extends Controller
         $events = Event::where('creator_id', '=', $uid)->get();
         return response()->json($events);
     }
+
+    public function addPrivateEvent(String $eventId, Request $request)
+    {
+        // Find event if it exist
+        $private_event = Event::where('event_key', '=', $eventId)->get();
+        // Check if array containns items
+        // get() returns an array of objects [{...}]
+        // Follow up with $private_event->first() to get the very first item if the lenght of above is > 0
+        if (count($private_event)) {
+            // Check if its a private event
+            // Check if Registration record exist
+            $registration_record = Registration::where('event_id', '=', $private_event->first()->id)->where('creator_id', '=', $request->creator_id)->get();
+            if (count($registration_record)) {
+                // Return already added response
+                return response()->json(["message" => "error"], 200);
+
+            } else {
+                // Add event registration record
+                Registration::create([
+                    'creator_id' => $request->creator_id,
+                    'event_id' => $private_event->first()->id,
+                    'registered' => 1,
+                ]);
+            }
+
+            // Return response
+            return response()->json(["message" => "ok"], 200);
+        }
+        return response()->json('No event found with specified key', 200);
+
+    }
 }

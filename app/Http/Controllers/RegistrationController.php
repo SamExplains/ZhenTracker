@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Registration;
+use App\StandardSignup;
 use Illuminate\Http\Request;
 
 class RegistrationController extends Controller
@@ -97,5 +98,22 @@ class RegistrationController extends Controller
     public function destroy(Request $request)
     {
         Registration::where('event_id', '=', $request->event_id)->where('creator_id', '=', $request->creator_id)->delete();
+    }
+
+    public function checkUserIn(Request $request)
+    {
+        // Find user based on [email] and [uid]
+        $user = StandardSignup::where('uuid', '=', $request->uuid)->where("email", '=', $request->email)->get();
+        if (count($user)) {
+            $registered = Registration::where('creator_id', '=', $user->first()->id)->where('event_id', '=', $request->eid)->get()->first();
+            // Check if registered has a record
+            if ($registered) {
+                $registered->checked_in = 1;
+                $registered->save();
+                return response()->json(["success" => "User was checked in."], 200);
+            }
+            return response()->json(["error" => "Could not find record"], 200);
+        }
+        return response()->json(["error" => "Could not verify user"], 200);
     }
 }

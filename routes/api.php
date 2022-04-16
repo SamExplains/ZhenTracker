@@ -141,7 +141,10 @@ Route::prefix('partybemine')->group(function () {
     Route::patch('/events/{eid}', 'EventController@updateRegistered');
     // PATCH event checklist
     Route::patch('/checklist', 'EventController@updateChtecklist');
-    // DELETE registered record
+
+    // Find private event by shareable key and regster a user
+    Route::post("/events/private/{eventId}", "EventController@addPrivateEvent");
+
     Route::delete('/registration', 'RegistrationController@destroy');
     // INSERT registration record
     Route::post('/registration', 'RegistrationController@store');
@@ -151,4 +154,7 @@ Route::prefix('partybemine')->group(function () {
     Route::get('/registration/user/{uid}/{eid}', 'RegistrationController@checkIfUserIsRegistered');
     // PATCH registration record
     Route::patch('/registration/{registration}', 'RegistrationController@update');
+
+    // Check a user in
+    Route::patch("/registration/user/checkin", "RegistrationController@checkUserIn");
 });
