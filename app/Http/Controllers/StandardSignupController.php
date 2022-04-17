@@ -181,4 +181,48 @@ END:VCARD";
     {
         //
     }
+
+    public function checkIfGoogleAccountIsStored(Request $request)
+    {
+        $record = StandardSignup::where('uuid', '=', $request->sub)->get();
+        // IF no record create it and send it back
+        if (!count($record)) {
+            $VCARD = "BEGIN:VCARD
+N:$request->name;
+TEL;TYPE=work,VOICE:$request->phone
+EMAIL:$request->email
+URL:$request->domain
+UID:$request->sub
+ROLE:'USER'
+KIND:Application
+VERSION:3.0
+END:VCARD";
+
+            $qr_code = QrCode::size(500)->format('png')->generate($VCARD);
+            $output_file = "/partybemine/user_qr_codes/" . $request->sub . '.png';
+
+            // Save file
+            Storage::disk('s3')->put($output_file, $qr_code);
+
+            $user = StandardSignup::create([
+                'role' => 'USER',
+                'email' => $request->email,
+                'zip' => $request->zip,
+                'name' => $request->name,
+                'password' => Hash::make($request->password),
+                'uuid' => $request->uuidsub,
+                'qrcode_src' => $this->s3BaseClientUL . $output_file,
+                'profile_image_src' => $request->profile_image_src,
+                'token' => Str::random(60),
+                'uuid' => $request->sub,
+            ]);
+            return response()->json($user, 201);
+        }
+        // Account already exist so return user object
+        if (strtolower($request->email) === strtolower($record->first()->email) && $request->sub === $record->first()->uuid) {
+            return response()->json($record->first(), 200);
+        }
+
+        return response()->json(["error" => "Could not authenticate"], 201);
+    }
 }

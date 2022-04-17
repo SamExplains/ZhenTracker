@@ -132,6 +132,8 @@ Route::prefix('partybemine')->group(function () {
     Route::post('/signup', 'StandardSignupController@store');
     Route::post('/quicklogin', 'StandardSignupController@quickLogin');
     Route::post('/login', 'StandardSignupController@login');
+    // GET check if a sub account with the matching sub is saved
+    Route::post('/google', 'StandardSignupController@checkIfGoogleAccountIsStored');
     Route::post('/create', 'EventController@create');
     Route::get('/events/{filter}', 'EventController@index');
     // GET events created by the user
