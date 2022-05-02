@@ -15,7 +15,7 @@ class RegistrationController extends Controller
      */
     public function index(String $uid)
     {
-        $registered = Registration::where('creator_id', '=', $uid)->where('registered', '=', 1)->with('events')->get();
+        $registered = Registration::where('creator_id', '=', $uid)->where('registered', '=', 1)->with('events')->orderBy('created_at', 'desc')->get();
         return response()->json($registered, 200);
     }
 
@@ -108,12 +108,21 @@ class RegistrationController extends Controller
             $registered = Registration::where('creator_id', '=', $user->first()->id)->where('event_id', '=', $request->eid)->get()->first();
             // Check if registered has a record
             if ($registered) {
-                $registered->checked_in = 1;
-                $registered->save();
-                return response()->json(["success" => "User was checked in."], 200);
+                if ($registered->checked_in !== 1) {
+                    $registered->checked_in = 1;
+                    $registered->save();
+                    return response()->json(["success" => "User was checked in."], 200);
+                } else {
+                    return response()->json(["error" => "User already checked in"], 200);
+                }
             }
             return response()->json(["error" => "Could not find record"], 200);
         }
         return response()->json(["error" => "Could not verify user"], 200);
+    }
+    public function returnCheckinAmount(String $eid)
+    {
+        $records = Registration::where('event_id', '=', $eid)->where('registered', '=', 1)->get();
+        return response()->json(count($records));
     }
 }

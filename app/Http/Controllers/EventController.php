@@ -77,6 +77,7 @@ class EventController extends Controller
             'qrcode' => $this->s3BaseClientUL . $event_output_file,
             'creator_id' => $request->creator_id,
             'event_key' => $event_key,
+            'private_authentication_code' => Str::random(13),
         ]);
 
         // Create and register creator record

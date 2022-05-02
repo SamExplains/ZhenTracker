@@ -7,11 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\ImageManagerStatic as Image;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class StandardSignupController extends Controller
 {
-    private $s3BaseClientUL = "https: //momsinla-storage.s3.us-west-1.amazonaws.com/partybemine";
+    private $s3BaseClientUL = "https://momsinla-storage.s3.us-west-1.amazonaws.com";
 
     /**
      * Display a listing of the resource.
@@ -63,7 +64,6 @@ class StandardSignupController extends Controller
             // Do not add spaces to the card otherwise it wont read when generated
             $VCARD = "BEGIN:VCARD
 N:$name;
-TEL;TYPE=work,VOICE:$phone
 EMAIL:$email
 URL:$domain
 UID:$uuid
@@ -89,6 +89,7 @@ END:VCARD";
                 'qrcode_src' => $this->s3BaseClientUL . $output_file,
                 'profile_image_src' => $profile_image_src,
                 'token' => $token,
+                'phone' => $request->phone,
             ]);
 
             return response()->json($user, 201);
@@ -185,20 +186,23 @@ END:VCARD";
     public function checkIfGoogleAccountIsStored(Request $request)
     {
         $record = StandardSignup::where('uuid', '=', $request->sub)->get();
+        $role = 'USER';
+
         // IF no record create it and send it back
         if (!count($record)) {
-            $VCARD = "BEGIN:VCARD
+            $domain = 'http://tracker.technologycredit.io/api/partybemine/user/' . $request->sub;
+
+            $GOOGLE_VCARD = "BEGIN:VCARD
 N:$request->name;
-TEL;TYPE=work,VOICE:$request->phone
 EMAIL:$request->email
-URL:$request->domain
+URL:$domain
 UID:$request->sub
-ROLE:'USER'
+ROLE:$role
 KIND:Application
 VERSION:3.0
 END:VCARD";
 
-            $qr_code = QrCode::size(500)->format('png')->generate($VCARD);
+            $qr_code = QrCode::size(500)->format('png')->generate($GOOGLE_VCARD);
             $output_file = "/partybemine/user_qr_codes/" . $request->sub . '.png';
 
             // Save file
@@ -224,5 +228,50 @@ END:VCARD";
         }
 
         return response()->json(["error" => "Could not authenticate"], 201);
+    }
+
+    /**
+     * @param $img
+     * @param $username
+     * @return array
+     */
+    private function returnDecodedImageAttributes($img)
+    {
+        $image = $img;
+        $imageName = 'image_' . Str::random(60) . '.png'; //generating unique file name;
+        $decodedBase64 = base64_decode($image);
+        // Store locally for the meantime
+        $output = "/partybemine/event_images/" . $imageName;
+        $img = Image::make($decodedBase64)->resize(300, null, function ($constraint) {
+            $constraint->aspectRatio();
+        })->stream('jpeg', 90);
+
+        Storage::disk('s3')->put($output, $img);
+        // Storage::disk('s3')->put($output, $decodedBase64);
+        return $this->s3BaseClientUL . $output;
+    }
+
+    public function updateProfileDetails(Request $request)
+    {
+        $user = StandardSignup::where('id', '=', $request->id)->get()->first();
+
+        if ($request->image !== null) {
+            // TODO DO NOT UPDATE GOOGLE EMAILS OR ELSE A LOT NEEDS TO BE CHANGED!
+            // TODO $user->email = $request->email;
+            $user->zip = $request->zip;
+            $user->phone = $request->phone;
+            $user->profile_image_src = $this->returnDecodedImageAttributes($request->image);
+            $user->save();
+            // Update image
+            return response()->json($user, 200);
+        } else {
+            // Update other fields
+            $user->zip = $request->zip;
+            $user->phone = $request->phone;
+            $user->save();
+
+            return response()->json($user, 200);
+        }
+
     }
 }
