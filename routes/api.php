@@ -163,4 +163,7 @@ Route::prefix('partybemine')->group(function () {
     Route::get('/registration/checkin/{eid}', 'RegistrationController@returnCheckinAmount');
     // PATCH user profile details
     Route::patch('/user/details', 'StandardSignupController@updateProfileDetails');
+
+    // PATCH update event
+    Route::patch('/events/edit/update', 'EventController@update');
 });

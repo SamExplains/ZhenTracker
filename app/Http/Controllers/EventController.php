@@ -151,9 +151,34 @@ class EventController extends Controller
      * @param  \App\Event  $event
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Event $event)
+    public function update(Request $request)
     {
-        //
+        // https://momsinla-storage.s3.us-west-1.amazonaws.com/partybemine/event_images/image_PinS3EFQIEZ0VvVHr44xmTGyulRshSVNK2MtorZNIcTyNmgoLSd5wBMPjbl2.png
+
+        $record = Event::where('id', '=', $request->id)->get()->first();
+        if ($record !== null) {
+            $record->title = $request->title;
+            $record->description = $request->description;
+            $record->start_time = $request->start_time;
+            $record->end_time = $request->end_time;
+            $record->first_image = (strlen($request->first_image) && $request->first_image !== null) ? $this->returnDecodedImageAttributes($request->first_image) : $record->first_image;
+            $record->second_image = (strlen($request->second_image) && $request->second_image !== null) ? $this->returnDecodedImageAttributes($request->second_image) : $record->second_image;
+            $record->address = $request->address;
+            $record->city = $request->city;
+            $record->zip = $request->zip;
+            $record->public_private = $request->public_private;
+            $record->on_off_line = $request->on_off_line;
+            $record->check_in = $request->check_in;
+            $record->capacity = $request->capacity;
+            $record->url = $request->url;
+            $record->email = $request->email;
+            $record->phone = $request->phone;
+            //
+            $record->save();
+            return response()->json($record, 201);
+        }
+
+        return response()->json('could not update record', 201);
     }
 
     public function updateRegistered(String $eid, Request $request)
