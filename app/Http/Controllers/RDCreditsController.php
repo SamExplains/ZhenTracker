@@ -73,14 +73,28 @@ class RDCreditsController extends Controller
      * @param RDCredit $credit
      * @return void
      */
-    public function update(Request $request, RDCredit $credit)
+    public function update(Request $request)
     {
-        try {
-            $credit->update($request->all());
+        $credit = RDCredit::where('id', '=', $request->id)->get()->first();
+        if ($credit !== null) {
+            $credit->period = $request->period;
+            $credit->credit_amount = $request->credit_amount;
+            $credit->credit_claimed = $request->credit_claimed;
+            $credit->credits_advanced = (!is_null($request->credits_advanced) ? $request->credits_advanced : 0);
+            $credit->credit_received = $request->credit_received;
+            $credit->date_check = $request->date_check;
+            $credit->save();
             return response()->json($credit, 201);
-        } catch (Exception $e) {
-            return response()->json($e->getMessage());
         }
+
+        return response()->json($credit, 201);
+
+        // try {
+        //     $credit->update($request->all());
+        //     return response()->json($credit, 201);
+        // } catch (Exception $e) {
+        //     return response()->json($e->getMessage());
+        // }
     }
 
     /****/

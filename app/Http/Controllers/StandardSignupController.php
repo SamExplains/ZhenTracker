@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\ForgotPasswordReset;
+use App\Mail\ForgotPasswordEmail;
 use App\StandardSignup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as Image;
@@ -257,7 +260,9 @@ END:VCARD";
 
         if ($request->image !== null) {
             // TODO DO NOT UPDATE GOOGLE EMAILS OR ELSE A LOT NEEDS TO BE CHANGED!
-            // TODO $user->email = $request->email;
+            if (!is_numeric($user->uuid)) {
+                $user->email = $request->email;
+            }
             $user->zip = $request->zip;
             $user->phone = $request->phone;
             $user->profile_image_src = $this->returnDecodedImageAttributes($request->image);
@@ -266,6 +271,9 @@ END:VCARD";
             return response()->json($user, 200);
         } else {
             // Update other fields
+            if (!is_numeric($user->uuid)) {
+                $user->email = $request->email;
+            }
             $user->zip = $request->zip;
             $user->phone = $request->phone;
             $user->save();
@@ -274,4 +282,60 @@ END:VCARD";
         }
 
     }
+
+    public function sendForgotPasswordEmail(Request $request)
+    {
+        // Search user based on email / id
+        $user = StandardSignup::where('email', '=', $request->email)->get()->first();
+
+        // Return error if no match
+        // Return error if account is Google type
+        if ($user) {
+            // code
+            $six_digit_random_number = random_int(100000, 999999);
+            // Check if not GOOGLE
+            if (!is_numeric($user->uuid)) {
+                // Proceed and send email if valid
+                // Create forgot password record
+                ForgotPasswordReset::create([
+                    'code' => $six_digit_random_number,
+                    'email' => $user->email,
+                ]);
+                //
+                // TODO make controller for saving password reset codes to use when updating password
+                $data = ['message' => 'This is a test!', 'code' => $six_digit_random_number];
+                Mail::to('samexplains@protonmail.com')->send(new ForgotPasswordEmail($data));
+                return response()->json(['success' => 'check your email'], 201);
+            } else {
+                return response()->json(['error' => 'Google accounts not allowed'], 201);
+
+            }
+
+        } else {
+            return response()->json(['error' => 'no match found'], 201);
+        }
+
+    }
+
+    public function updateUserPassword(Request $request)
+    {
+        // Grab last record for request email
+        // Check if codes match
+        $fpr = ForgotPasswordReset::where('email', '=', $request->email)->get()->last();
+        $user = StandardSignup::where('email', '=', $request->email)->get()->first();
+
+        if ($fpr) {
+            if ($request->code == $fpr->code && $fpr->email === $user->email && !is_numeric($user->uuid)) {
+                $user->password = Hash::make($request->password);
+                $user->save();
+                return response()->json(['success' => 'Information updated'], 201);
+            } else {
+                return response()->json(['error' => 'Information does not match!'], 201);
+            }
+        } else {
+            return response()->json(['error' => 'Invalid informaton'], 201);
+        }
+
+    }
+
 }

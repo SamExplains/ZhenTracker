@@ -44,7 +44,7 @@ Route::prefix('company')->group(function () {
     Route::delete('/delete-credit/{credit}', 'RDCreditsController@destroy');
 
     // Update Credit Recieved
-    Route::put('/update-rdc/{credit}', 'RDCreditsController@update');
+    Route::patch('/update/rd/credit', 'RDCreditsController@update');
 
     Route::post('/form-upload/{form}', 'FormController@store');
     Route::post('/form-upload-additional/{form}', 'FormController@storeAdditional');
@@ -166,4 +166,10 @@ Route::prefix('partybemine')->group(function () {
 
     // PATCH update event
     Route::patch('/events/edit/update', 'EventController@update');
+
+    // Send password reset email
+    Route::post('/user/password-reset-request', 'StandardSignupController@sendForgotPasswordEmail');
+
+    // Validate code password reset
+    Route::post('/user/password-reset', 'StandardSignupController@updateUserPassword');
 });

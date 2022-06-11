@@ -806,7 +806,7 @@ export default {
     },
     updateRecord(id) {
       const r = {
-        id,
+        id: id,
         period: $(`#check_period-${id}`).val() || "",
         formAmount: $(`#updatedAmount_${id}`).val(),
         claimed: $(`#updatedClaimed_${id}`).val(),
@@ -814,6 +814,8 @@ export default {
         recieved: $(`#updatedReceived_${id}`).val(),
         checkDate: $(`#check_date-${id}`).val() || "",
       };
+
+      // console.log(r);
 
       this.updateResearchRecord(r); // record is the local data for the selected row to PATCH and UPDATE Store.
       this.$notify({
