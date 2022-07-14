@@ -5,7 +5,7 @@
         <credits-chart-component />
       </div>
 
-      <div class="col-lg-3 col-6 mb-3 mr-0 pr-0">
+      <div class="col-lg-3 col-12 mb-3 mr-0 pr-0">
         <checklist-component />
       </div>
 

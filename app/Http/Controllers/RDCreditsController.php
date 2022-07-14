@@ -16,11 +16,11 @@ class RDCreditsController extends Controller
      */
     public function index()
     {
-      return response()->json([
-       'total' => RDCredit::all()->sum('credit_amount'),
-       'filed' => RDCredit::all()->sum('credit_claimed'),
-       'received' => RDCredit::all()->sum('credit_received')
-      ]);
+        return response()->json([
+            'total' => RDCredit::all()->sum('credit_amount'),
+            'filed' => RDCredit::all()->sum('credit_claimed'),
+            'received' => RDCredit::all()->sum('credit_received'),
+        ]);
     }
 
     /**
@@ -66,42 +66,56 @@ class RDCreditsController extends Controller
         //
     }
 
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param \Illuminate\Http\Request $request
-   * @param RDCredit $credit
-   * @return void
-   */
-    public function update(Request $request, RDCredit $credit)
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param RDCredit $credit
+     * @return void
+     */
+    public function update(Request $request)
     {
-        try{
-          $credit->update($request->all());
-          return response()->json($credit, 201);
-        } catch (Exception $e) {
-          return response()->json($e->getMessage());
+        $credit = RDCredit::where('id', '=', $request->id)->get()->first();
+        if ($credit !== null) {
+            $credit->period = $request->period;
+            $credit->credit_amount = $request->credit_amount;
+            $credit->credit_claimed = $request->credit_claimed;
+            $credit->credits_advanced = (!is_null($request->credits_advanced) ? $request->credits_advanced : 0);
+            $credit->credit_received = $request->credit_received;
+            $credit->date_check = $request->date_check;
+            $credit->save();
+            return response()->json($credit, 201);
         }
+
+        return response()->json($credit, 201);
+
+        // try {
+        //     $credit->update($request->all());
+        //     return response()->json($credit, 201);
+        // } catch (Exception $e) {
+        //     return response()->json($e->getMessage());
+        // }
     }
 
-      /****/
-        public function delete(RDCredit $credit)
-        {
-          return response()->json($credit);
-        }
+    /****/
+    public function delete(RDCredit $credit)
+    {
+        return response()->json($credit);
+    }
 
-  /**
-   * Remove the specified resource from storage.
-  *
-   * @param RDCredit $credit
-   * @return \Illuminate\Http\Response
-   * @throws \Exception
-   */
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param RDCredit $credit
+     * @return \Illuminate\Http\Response
+     * @throws \Exception
+     */
     public function destroy(RDCredit $credit)
     {
-      $credit->delete();
-      $creditFormExists = Form::find($credit->id);
-      $creditFormExists->delete();
+        $credit->delete();
+        $creditFormExists = Form::find($credit->id);
+        $creditFormExists->delete();
 
-      return response()->json($credit, 201);
+        return response()->json($credit, 201);
     }
 }

@@ -806,7 +806,7 @@ export default {
     },
     updateRecord(id) {
       const r = {
-        id,
+        id: id,
         period: $(`#check_period-${id}`).val() || "",
         formAmount: $(`#updatedAmount_${id}`).val(),
         claimed: $(`#updatedClaimed_${id}`).val(),
@@ -814,6 +814,8 @@ export default {
         recieved: $(`#updatedReceived_${id}`).val(),
         checkDate: $(`#check_date-${id}`).val() || "",
       };
+
+      // console.log(r);
 
       this.updateResearchRecord(r); // record is the local data for the selected row to PATCH and UPDATE Store.
       this.$notify({
@@ -1001,6 +1003,7 @@ export default {
       this.returnSlicedRecordsAtIndexGiven(recordID);
 
       const slicedRecords = this.returnSlicedRecordsAtIndexGivenArr;
+      // console.log("SLICED ", slicedRecords);
       // console.error(slicedRecords);
 
       // this.returnSlicedRecordsAtIndexGivenAccumulationValue
@@ -1259,7 +1262,7 @@ export default {
 
             break;
           case 1:
-            console.warn("Triggered 1");
+            // console.warn("Triggered 1");
             /* Draw A */
             firstPage.drawText(el.period, {
               x: START_X,
@@ -1307,31 +1310,60 @@ export default {
             /* Draw F */
             // firstPage.drawText(el.claimed, {
             // firstPage.drawText(slicedRecords[1].CALCULATION.toString() || "0", {
-            firstPage.drawText(colFandG[0].toString() || "0", {
-              x: START_X + xOffset * 5 + 5,
-              y: height / 2 + 54 - yOffset,
-              ...baseOptions,
-            });
+            if (this.returnCurrentActiveCompany.name === "Baylx Inc") {
+              // slicedRecords
+              firstPage.drawText(
+                slicedRecords[elIndex].CALCULATION.toString() || "0",
+                {
+                  x: START_X + xOffset * 5 + 5,
+                  y: height / 2 + 54 - yOffset,
+                  ...baseOptions,
+                }
+              );
+            } else {
+              firstPage.drawText(colFandG[0].toString() || "0", {
+                x: START_X + xOffset * 5 + 5,
+                y: height / 2 + 54 - yOffset,
+                ...baseOptions,
+              });
+            }
 
-            // Calculate E – F and put into columnGCalculations
-            // returnSlicedRecordsAtIndexGiven returns the records sums to be added [{...CALCULATION }, {...}]
-            // columnGCalculations.push(
-            //   parseFloat(el.formAmount - slicedRecords[1].CALCULATION).toFixed(
-            //     2
-            //   )
-            // );
-
-            columnGCalculations.push(parseFloat(colFandG[1]).toFixed(2));
+            if (this.returnCurrentActiveCompany.name === "Baylx Inc") {
+              // Weird edge case where only on Bayyx it has issues
+              // Calculate E – F and put into columnGCalculations
+              // returnSlicedRecordsAtIndexGiven returns the records sums to be added [{...CALCULATION }, {...}]
+              columnGCalculations.push(
+                parseFloat(
+                  el.formAmount - slicedRecords[1].CALCULATION
+                ).toFixed(2)
+              );
+            } else {
+              columnGCalculations.push(parseFloat(colFandG[1]).toFixed(2));
+            }
 
             // console.warn("Record Slot 2 G: ", columnGCalculations[1]);
 
             /* Draw G */
             // firstPage.drawText(columnGCalculations[1].toString() || "0.0", {
-            firstPage.drawText(colFandG[1].toString() || "0.0", {
-              x: START_X + xOffset * 6 + 10,
-              y: height / 2 + 54 - yOffset,
-              ...baseOptions,
-            });
+            if (this.returnCurrentActiveCompany.name === "Baylx Inc") {
+              // Draw the correct amount due to some wierd issue only with Baylyx
+              firstPage.drawText(
+                columnGCalculations[
+                  columnGCalculations.length - 1
+                ].toString() || "0.0",
+                {
+                  x: START_X + xOffset * 6 + 10,
+                  y: height / 2 + 54 - yOffset,
+                  ...baseOptions,
+                }
+              );
+            } else {
+              firstPage.drawText(colFandG[1].toString() || "0.0", {
+                x: START_X + xOffset * 6 + 10,
+                y: height / 2 + 54 - yOffset,
+                ...baseOptions,
+              });
+            }
 
             break;
           case 2:
@@ -1511,12 +1543,12 @@ export default {
             });
 
             // Calculate E – F and put into columnGCalculations
-            // columnGCalculations.push(
-            //   parseFloat(el.formAmount - slicedRecords[4].CALCULATION).toFixed(
-            //     2
-            //   )
-            // );
-            columnGCalculations.push(parseFloat(colFandG[1]).toFixed(2));
+            columnGCalculations.push(
+              parseFloat(el.formAmount - slicedRecords[4].CALCULATION).toFixed(
+                2
+              )
+            );
+            // columnGCalculations.push(parseFloat(colFandG[1]).toFixed(2));
 
             /* Draw G */
             firstPage.drawText(columnGCalculations[4].toString() || "0.0", {
@@ -1601,11 +1633,14 @@ export default {
         ...baseOptions,
       });
 
+      // Baylyx should be 33789.82
+
       // Reset state.returnSlicedRecordsAtIndexGivenAccumulation  to 0
       this.resetSlicedRecordsAtIndexGivenAccumulation();
 
       /* Save report and Download*/
       const pdfBytes = await pdfDoc.save();
+
       // Trigger the browser to download the PDF document
       download(pdfBytes, `IRS-8974-${Date.now()}.pdf`, "application/pdf");
     },

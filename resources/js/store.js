@@ -988,14 +988,15 @@ export default new Vuex.Store({
       */
       // console.log('updateResearchRecord ', payload);
 
-      await axios.put(`api/company/update-rdc/${payload.id}`,
+      await axios.patch(`api/company/update/rd/credit`,
         {
           period: payload.period,
           credit_amount: payload.formAmount,
           credit_claimed: payload.claimed,
-          credits_advanced: payload.advanced,
+          credits_advanced: (payload.advanced !== null) ? payload.advanced : 0,
           credit_received: payload.recieved,
-          date_check: payload.checkDate
+          date_check: payload.checkDate,
+          id: payload.id
         }
       );
 
