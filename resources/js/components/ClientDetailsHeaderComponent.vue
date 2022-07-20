@@ -64,7 +64,7 @@
 
 <script>
 import axios from "axios";
-import { mapActions, mapGetters } from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import ConsolidatedRDCreditsComponent from "./ConsolidatedRDCreditsComponent";
 
 export default {
@@ -81,34 +81,41 @@ export default {
       showRDOverview: false,
     };
   },
-  async created() {
+  async beforeMount() {
+    console.log("Now fetching company data!");
     const companyList = await axios.get("/api/company");
-    const { data } = await axios.get("/association");
+    // const { data } = await axios.get("/association");
 
     // Filter out if NOT Admin to Assigned Company
-    if (this.returnActiveUser.status !== "Admin") {
-      if ("company_id" in data[0]) {
-        this.associatedTo.company_id = data[0].company_id;
-        this.associatedTo.company_name = data[0].company_name;
+    // if (this.returnActiveUser.status !== "Admin") {
+    //   if ("company_id" in data[0]) {
+    //     this.associatedTo.company_id = data[0].company_id;
+    //     this.associatedTo.company_name = data[0].company_name;
 
-        /** ------------------------ */
+    //     /** ------------------------ */
 
-        const found = companyList.data.findIndex(
-          (obj) => obj.id === data[0].company_id
-        );
-        this.companies = [companyList.data[found]];
-        // console.warn('Filtering Done ', this.companies);
-      } else {
-        // console.warn('Client Details Header : Could not retrieve association. ', data[0])
-      }
-    } else {
-      this.companies = companyList.data;
-    }
+    //     const found = companyList.data.findIndex(
+    //       (obj) => obj.id === data[0].company_id
+    //     );
+    //     this.companies = [companyList.data[found]];
+    //     // console.warn('Filtering Done ', this.companies);
+    //   } else {
+    //     // console.warn('Client Details Header : Could not retrieve association. ', data[0])
+    //   }
+    // } else {
+    //   this.companies = companyList.data;
+    // }
+
+    // Set companies data
+    this.companies = companyList.data;
+
+    // console.warn("Companies ", this.companies);
 
     this.setCompaniesList(companyList.data);
-    if ("company_id" in data) {
-      this.setCompanyAssociation(data);
-    }
+    // Old feature not being used
+    // if ("company_id" in data) {
+    //   this.setCompanyAssociation(data);
+    // }
   },
   computed: {
     ...mapGetters([
